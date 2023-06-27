@@ -430,10 +430,6 @@ module Stripe
     #   remove accessors.
     protected def initialize_from(values, opts)
       @opts = Util.normalize_opts(opts)
-
-      # the `#send` is here so that we can keep this method private
-      # @original_values = self.class.send(:deep_copy, values)
-      # experiment with not copying the values
       @original_values = values
 
       removed = Set.new(@values.keys - values.keys)
