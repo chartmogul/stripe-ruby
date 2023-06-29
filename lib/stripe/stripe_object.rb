@@ -147,7 +147,6 @@ module Stripe
     #   StripeObject. Defaults to true.
     def update_attributes(values, opts = {}, dirty: true)
       values.each do |k, v|
-        add_accessors([k], values) unless metaclass.method_defined?(k.to_sym)
         @values[k] = Util.convert_to_stripe_object(v, opts)
         dirty_value!(@values[k]) if dirty
         @unsaved_values.add(k)
@@ -431,9 +430,7 @@ module Stripe
     #   remove accessors.
     protected def initialize_from(values, opts)
       @opts = Util.normalize_opts(opts)
-
-      # the `#send` is here so that we can keep this method private
-      @original_values = self.class.send(:deep_copy, values)
+      @original_values = values
 
       removed = Set.new(@values.keys - values.keys)
       added = Set.new(values.keys - @values.keys)
@@ -443,7 +440,6 @@ module Stripe
       # values which don't persist as transient
 
       remove_accessors(removed)
-      add_accessors(added, values)
 
       removed.each do |k|
         @values.delete(k)
